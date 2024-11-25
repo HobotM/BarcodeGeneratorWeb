@@ -45,6 +45,27 @@ public class HomeController : Controller
         return null; // Input is valid
     }
 
+    private string CalculateEAN13Checksum(string data)
+{
+    if (data.Length != 12 || !Regex.IsMatch(data, @"^\d{12}$"))
+        throw new ArgumentException("EAN-13 data must be 12 digits long.");
+
+    int sum = 0;
+    for (int i = 0; i < data.Length; i++)
+    {
+        int digit = int.Parse(data[i].ToString());
+        if (i % 2 == 0) // Even index positions (starting from 0)
+            sum += digit;
+        else // Odd index positions
+            sum += digit * 3;
+    }
+    int modulo = sum % 10;
+    int checksum = modulo == 0 ? 0 : 10 - modulo;
+
+    return data + checksum.ToString();
+}
+
+
 
     [HttpPost]
     public IActionResult GenerateBarcode(BarcodeViewModel model)
@@ -66,12 +87,12 @@ public class HomeController : Controller
         }
 
         //Validator
-         string validationError = ValidateInput(model.Text, barcodeFormat);
-    if (validationError != null)
-    {
-        ModelState.AddModelError("Text", validationError);
-        return View("Index", model);
-    }
+        string validationError = ValidateInput(model.Text, barcodeFormat);
+        if (validationError != null)
+        {
+            ModelState.AddModelError("Text", validationError);
+            return View("Index", model);
+        }
         try
         {
             var barcodeWriter = new BarcodeWriterPixelData
@@ -81,7 +102,9 @@ public class HomeController : Controller
                 {
                     Height = 150,
                     Width = 300,
-                    Margin = 10
+                    Margin = 10,
+                    PureBarcode = true, // Optional: if you don't want human-readable text
+                   
                 }
             };
 

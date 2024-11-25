@@ -47,3 +47,25 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<script>
+
+     $(document).ready(function () {
+        $('#Format').change(function () {
+            var selectedFormat = $(this).val();
+            var message = '';
+            switch (selectedFormat) {
+                case 'EAN_13':
+                    message = 'EAN-13 format requires exactly 13 digits.';
+                    break;
+                case 'UPC_A':
+                    message = 'UPC-A format requires exactly 12 digits.';
+                    break;
+                // Add more cases as needed
+                default:
+                    message = '';
+            }
+            $('#formatRequirements').text(message);
+        });
+    });
+</script>
