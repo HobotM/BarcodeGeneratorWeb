@@ -1,0 +1,49 @@
+﻿@model BarcodeViewModel
+@{
+    ViewData["Title"] = "Barcode Generator";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form method="post" asp-action="GenerateBarcode">
+    <div>
+        <label asp-for="Text">Enter the text to encode:</label><br />
+        <input asp-for="Text" style="width:300px;" />
+        <span asp-validation-for="Text" style="color:red;"></span>
+    </div>
+    <br />
+
+    <div>
+        <label asp-for="Format">Select Barcode Format:</label><br />
+        <select asp-for="Format">
+            <option value="">-- Select Format --</option>
+            <option value="CODE_128">CODE 128</option>
+            <option value="EAN_13">EAN-13</option>
+            <option value="UPC_A">UPC-A</option>
+            <option value="QR_CODE">QR Code</option>
+            <option value="CODE_39">Code 39</option>
+            <!-- Add more formats as needed -->
+        </select>
+        <span asp-validation-for="Format" style="color:red;"></span>
+    </div>
+    <br />
+
+    <input type="submit" value="Generate Barcode" />
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <div style="color:red; margin-top:20px;">
+        <strong>Error:</strong> @ViewBag.Error
+    </div>
+}
+
+@if (ViewBag.BarcodeImage != null)
+{
+    <h2>Generated Barcode:</h2>
+    <img src="@ViewBag.BarcodeImage" alt="Generated Barcode" />
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
